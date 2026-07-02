@@ -1,0 +1,12 @@
+{
+  "name": "請求書・領収書メーカー",
+  "short_name": "請求領収",
+  "description": "同じ取引データから請求書と領収書を同時に作成できるアプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#0f766e",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

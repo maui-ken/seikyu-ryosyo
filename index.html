@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0f766e" />
+<link rel="manifest" href="manifest.json" />
+<title>請求書・領収書メーカー</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app">
+  <!-- ============ 編集画面 ============ -->
+  <header class="topbar no-print">
+    <h1>請求書・領収書メーカー</h1>
+    <div class="topbar-actions">
+      <button id="btnHistory" class="ghost" type="button">履歴</button>
+      <button id="btnNew" class="ghost" type="button">新規</button>
+    </div>
+  </header>
+
+  <main class="layout no-print">
+    <!-- 入力フォーム -->
+    <section class="editor" aria-label="入力">
+      <fieldset>
+        <legend>発行者（自社）</legend>
+        <label>会社名・氏名<input id="issuerName" placeholder="株式会社〇〇 / 山田太郎" /></label>
+        <label>郵便番号<input id="issuerZip" placeholder="123-4567" /></label>
+        <label>住所<input id="issuerAddress" placeholder="東京都〇〇区…" /></label>
+        <label>電話<input id="issuerTel" placeholder="03-0000-0000" /></label>
+        <label>メール<input id="issuerEmail" placeholder="info@example.com" /></label>
+        <label>登録番号（インボイス・任意）<input id="issuerRegNo" placeholder="T1234567890123" /></label>
+        <label>振込先（請求書に表示・任意）<textarea id="issuerBank" rows="2" placeholder="〇〇銀行 〇〇支店 普通 1234567 カ)〇〇"></textarea></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>宛先</legend>
+        <label>宛名<input id="clientName" placeholder="株式会社△△" /></label>
+        <label>敬称
+          <select id="clientHonorific">
+            <option value="御中">御中</option>
+            <option value="様">様</option>
+            <option value="">（なし）</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>取引情報</legend>
+        <label>請求書番号<input id="seikyuNo" placeholder="INV-0001" /></label>
+        <label>領収書番号<input id="ryoshuNo" placeholder="RCP-0001" /></label>
+        <label>発行日<input id="issueDate" type="date" /></label>
+        <label>お支払期限（請求書・任意）<input id="dueDate" type="date" /></label>
+        <label>領収日（領収書）<input id="receiptDate" type="date" /></label>
+        <label>但し書き（領収書）<input id="tadashigaki" placeholder="〇〇代として" /></label>
+        <label>受領方法（領収書）
+          <select id="payMethod">
+            <option value="現金">現金</option>
+            <option value="銀行振込">銀行振込</option>
+            <option value="クレジットカード">クレジットカード</option>
+            <option value="その他">その他</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>明細</legend>
+        <div id="itemsWrap"></div>
+        <button id="btnAddItem" class="ghost" type="button">＋ 明細を追加</button>
+        <label class="inline">税額の端数処理
+          <select id="taxRounding">
+            <option value="floor">切り捨て</option>
+            <option value="round">四捨五入</option>
+            <option value="ceil">切り上げ</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>備考</legend>
+        <label><textarea id="note" rows="2" placeholder="納品物やお礼など"></textarea></label>
+      </fieldset>
+    </section>
+
+    <!-- プレビュー & 出力 -->
+    <section class="preview-pane" aria-label="プレビュー">
+      <div class="preview-controls">
+        <div class="seg" role="tablist">
+          <button data-doc="seikyu" class="seg-btn active" type="button">請求書</button>
+          <button data-doc="ryoshu" class="seg-btn" type="button">領収書</button>
+          <button data-doc="both" class="seg-btn" type="button">両方</button>
+        </div>
+        <div class="preview-controls-right">
+          <button id="btnSave" class="ghost" type="button">保存</button>
+          <button id="btnPrint" class="primary" type="button">PDF出力</button>
+        </div>
+      </div>
+      <div id="previewScroll" class="preview-scroll"></div>
+    </section>
+  </main>
+
+  <footer class="site-foot no-print">
+    <span>© 2026 請求書・領収書メーカー</span>
+    <a href="privacy.html">プライバシーポリシー</a>
+  </footer>
+
+  <!-- ============ 印刷専用エリア（画面では非表示） ============ -->
+  <div id="printArea" class="print-area"></div>
+
+  <!-- ============ 履歴ドロワー ============ -->
+  <div id="historyOverlay" class="overlay hidden no-print">
+    <div class="drawer">
+      <div class="drawer-head">
+        <h2>履歴</h2>
+        <button id="btnCloseHistory" class="ghost" type="button">閉じる</button>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+</div>
+
+<script src="engine.js"></script>
+<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>
