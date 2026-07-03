@@ -38,7 +38,10 @@ html, body {
 }
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }
-  .preview-pane { order: -1; }
+  /* スマホ: 入力フォームを上、プレビューを下に。sticky解除で重なり防止 */
+  .editor { order: 1; }
+  .preview-pane { order: 2; position: static; top: auto; }
+  .preview-scroll { max-height: none; overflow: visible; }
 }
 
 /* ---------- フォーム ---------- */

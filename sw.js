@@ -1,5 +1,5 @@
 /* sw.js — オフライン対応のシンプルなキャッシュ */
-var CACHE = 'seikyu-ryosyo-v1';
+var CACHE = 'seikyu-ryosyo-v2';
 var ASSETS = [
   './',
   './index.html',
