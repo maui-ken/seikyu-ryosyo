@@ -13,8 +13,8 @@
     return {
       id: 'D' + Date.now(),
       createdAt: Date.now(),
-      seikyuNo: '', ryoshuNo: '',
-      issueDate: today, dueDate: '', receiptDate: today,
+      seikyuNo: '', nohinNo: '', ryoshuNo: '',
+      issueDate: today, dueDate: '', deliveryDate: today, receiptDate: today,
       tadashigaki: '', payMethod: '銀行振込',
       issuer: { name: '', zip: '', address: '', tel: '', email: '', regNo: '', bank: '' },
       client: { name: '', honorific: '御中' },
@@ -60,8 +60,10 @@
   function readDocToForm() {
     $('clientName').value = state.client.name;
     $('clientHonorific').value = state.client.honorific;
-    $('seikyuNo').value = state.seikyuNo; $('ryoshuNo').value = state.ryoshuNo;
+    $('seikyuNo').value = state.seikyuNo; $('nohinNo').value = state.nohinNo;
+    $('ryoshuNo').value = state.ryoshuNo;
     $('issueDate').value = state.issueDate; $('dueDate').value = state.dueDate;
+    $('deliveryDate').value = state.deliveryDate;
     $('receiptDate').value = state.receiptDate;
     $('tadashigaki').value = state.tadashigaki; $('payMethod').value = state.payMethod;
     $('taxRounding').value = state.taxRounding;
@@ -82,9 +84,11 @@
     bindField('clientName', function (v) { state.client.name = v; });
     bindField('clientHonorific', function (v) { state.client.honorific = v; });
     bindField('seikyuNo', function (v) { state.seikyuNo = v; });
+    bindField('nohinNo', function (v) { state.nohinNo = v; });
     bindField('ryoshuNo', function (v) { state.ryoshuNo = v; });
     bindField('issueDate', function (v) { state.issueDate = v; });
     bindField('dueDate', function (v) { state.dueDate = v; });
+    bindField('deliveryDate', function (v) { state.deliveryDate = v; });
     bindField('receiptDate', function (v) { state.receiptDate = v; });
     bindField('tadashigaki', function (v) { state.tadashigaki = v; });
     bindField('payMethod', function (v) { state.payMethod = v; });
@@ -255,11 +259,33 @@
       '</div>';
   }
 
+  function renderNohin(totals) {
+    var meta = [];
+    if (state.nohinNo) meta.push('納品書番号: ' + esc(state.nohinNo));
+    meta.push('納品日: ' + fmtDate(state.deliveryDate || state.issueDate));
+
+    return '<div class="doc">' +
+      '<div class="doc-title">納品書</div>' +
+      '<div class="doc-top">' +
+        '<div class="doc-client"><div class="to-name">' + clientName() + '</div></div>' +
+        '<div class="doc-meta">' + meta.join('<br>') + '</div>' +
+      '</div>' +
+      issuerBlock() +
+      '<div class="doc-amount-box"><span class="lbl">合計金額</span>' +
+        '<span class="val">' + E.yen(totals.total) + '<span class="tax-in">（税込）</span></span></div>' +
+      '<div class="doc-lead">下記の通り納品いたしました。</div>' +
+      itemsTable(true) +
+      sumBlock(totals) + taxDetail(totals) +
+      (state.note ? '<div class="doc-note">備考：' + esc(state.note) + '</div>' : '') +
+      '</div>';
+  }
+
   function buildDocs() {
     var totals = E.calcTotals(state.items, state.taxRounding);
     var html = '';
-    if (viewMode === 'seikyu' || viewMode === 'both') html += renderSeikyu(totals);
-    if (viewMode === 'ryoshu' || viewMode === 'both') html += renderRyoshu(totals);
+    if (viewMode === 'nohin' || viewMode === 'all') html += renderNohin(totals);
+    if (viewMode === 'seikyu' || viewMode === 'all') html += renderSeikyu(totals);
+    if (viewMode === 'ryoshu' || viewMode === 'all') html += renderRyoshu(totals);
     return html;
   }
 

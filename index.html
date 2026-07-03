@@ -49,9 +49,11 @@
       <fieldset>
         <legend>取引情報</legend>
         <label>請求書番号<input id="seikyuNo" placeholder="INV-0001" /></label>
+        <label>納品書番号<input id="nohinNo" placeholder="DN-0001" /></label>
         <label>領収書番号<input id="ryoshuNo" placeholder="RCP-0001" /></label>
         <label>発行日<input id="issueDate" type="date" /></label>
         <label>お支払期限（請求書・任意）<input id="dueDate" type="date" /></label>
+        <label>納品日（納品書）<input id="deliveryDate" type="date" /></label>
         <label>領収日（領収書）<input id="receiptDate" type="date" /></label>
         <label>但し書き（領収書）<input id="tadashigaki" placeholder="〇〇代として" /></label>
         <label>受領方法（領収書）
@@ -88,8 +90,9 @@
       <div class="preview-controls">
         <div class="seg" role="tablist">
           <button data-doc="seikyu" class="seg-btn active" type="button">請求書</button>
+          <button data-doc="nohin" class="seg-btn" type="button">納品書</button>
           <button data-doc="ryoshu" class="seg-btn" type="button">領収書</button>
-          <button data-doc="both" class="seg-btn" type="button">両方</button>
+          <button data-doc="all" class="seg-btn" type="button">全部</button>
         </div>
         <div class="preview-controls-right">
           <button id="btnSave" class="ghost" type="button">保存</button>
