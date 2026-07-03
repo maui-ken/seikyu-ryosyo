@@ -1,5 +1,8 @@
-/* sw.js — オフライン対応のシンプルなキャッシュ */
-var CACHE = 'seikyu-ryosyo-v3';
+/* sw.js — オフライン対応のキャッシュ
+ * HTML/JS はネット優先（常に最新を配信、オフライン時のみキャッシュ）。
+ * それ以外(css/画像/manifest)はキャッシュ優先で高速表示。
+ */
+var CACHE = 'seikyu-ryosyo-v4';
 var ASSETS = [
   './',
   './index.html',
@@ -26,15 +29,36 @@ self.addEventListener('activate', function (e) {
   self.clients.claim();
 });
 
+// ネット優先: 取得できたらキャッシュも更新。失敗時のみキャッシュ。
+function networkFirst(req) {
+  return fetch(req).then(function (res) {
+    var copy = res.clone();
+    caches.open(CACHE).then(function (c) { c.put(req, copy); });
+    return res;
+  }).catch(function () {
+    return caches.match(req).then(function (hit) {
+      return hit || caches.match('./index.html');
+    });
+  });
+}
+
+// キャッシュ優先: あれば即返し、無ければ取得してキャッシュ。
+function cacheFirst(req) {
+  return caches.match(req).then(function (hit) {
+    return hit || fetch(req).then(function (res) {
+      var copy = res.clone();
+      caches.open(CACHE).then(function (c) { c.put(req, copy); });
+      return res;
+    });
+  });
+}
+
 self.addEventListener('fetch', function (e) {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then(function (hit) {
-      return hit || fetch(e.request).then(function (res) {
-        var copy = res.clone();
-        caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
-        return res;
-      }).catch(function () { return caches.match('./index.html'); });
-    })
-  );
+  var req = e.request;
+  if (req.method !== 'GET') return;
+  var url = new URL(req.url);
+  var isDoc = req.mode === 'navigate' ||
+    /\.(html|js)$/.test(url.pathname) ||
+    url.pathname === '/' || url.pathname.endsWith('/');
+  e.respondWith(isDoc ? networkFirst(req) : cacheFirst(req));
 });

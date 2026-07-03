@@ -42,6 +42,11 @@ html, body {
   .editor { order: 1; }
   .preview-pane { order: 2; position: static; top: auto; }
   .preview-scroll { max-height: none; overflow: visible; }
+  /* スマホ: 切り替えボタンが見切れないよう縦積み＋均等幅に */
+  .preview-controls { flex-direction: column; align-items: stretch; }
+  .seg { display: flex; width: 100%; }
+  .seg-btn { flex: 1; padding: 10px 4px; }
+  .preview-controls-right { justify-content: flex-end; }
 }
 
 /* ---------- フォーム ---------- */
