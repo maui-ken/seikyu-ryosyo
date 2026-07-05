@@ -211,11 +211,11 @@
     if (state.dueDate) meta.push('お支払期限: ' + fmtDate(state.dueDate));
 
     var bank = i.bank
-      ? '<div class="doc-bank"><div style="font-weight:700;margin-bottom:4px">お振込先</div><div class="box">' + esc(i.bank) + '</div></div>'
+      ? '<div class="doc-bank"><div class="bank-title">お振込先</div><div class="box">' + esc(i.bank) + '</div></div>'
       : '<div class="doc-bank"></div>';
 
     return '<div class="doc">' +
-      '<div class="doc-title">請求書</div>' +
+      '<div class="doc-title serif">請求書</div><div class="doc-title-rule"></div>' +
       '<div class="doc-top">' +
         '<div class="doc-client"><div class="to-name">' + clientName() + '</div></div>' +
         '<div class="doc-meta">' + meta.join('<br>') + '</div>' +
@@ -239,7 +239,7 @@
     var stamp = E.stampDuty(totals.total);
 
     return '<div class="doc">' +
-      '<div class="doc-title">領収書</div>' +
+      '<div class="doc-title serif">領収書</div><div class="doc-title-rule"></div>' +
       '<div class="doc-top">' +
         '<div class="doc-client"><div class="to-name">' + clientName() + '</div></div>' +
         '<div class="doc-meta">' + meta.join('<br>') + '</div>' +
@@ -265,7 +265,7 @@
     meta.push('納品日: ' + fmtDate(state.deliveryDate || state.issueDate));
 
     return '<div class="doc">' +
-      '<div class="doc-title">納品書</div>' +
+      '<div class="doc-title serif">納品書</div><div class="doc-title-rule"></div>' +
       '<div class="doc-top">' +
         '<div class="doc-client"><div class="to-name">' + clientName() + '</div></div>' +
         '<div class="doc-meta">' + meta.join('<br>') + '</div>' +
@@ -390,10 +390,67 @@
   function openHistory() { renderHistory(); $('historyOverlay').classList.remove('hidden'); }
   function closeHistory() { $('historyOverlay').classList.add('hidden'); }
 
-  // ---------------- PDF出力（印刷） ----------------
-  function printDocs() {
+  // ---------------- PDF出力 ----------------
+  // jsPDF + html2canvas で各書類をA4ページに描画してダウンロード。
+  // ライブラリが無い/失敗した場合はブラウザ印刷にフォールバック。
+  function fallbackPrint() {
     $('printArea').innerHTML = buildDocs();
     window.print();
+  }
+
+  function safeName(s) {
+    return String(s || '').replace(/[\\\/:*?"<>|\s]+/g, '_').slice(0, 40) || '書類';
+  }
+
+  function downloadPDF() {
+    var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+    if (!jsPDFCtor || !window.html2canvas) { fallbackPrint(); return; }
+
+    var btn = $('btnPrint');
+    var label = btn.textContent;
+    btn.disabled = true; btn.textContent = '生成中…';
+
+    // A4幅(約794px)でオフスクリーン描画
+    var holder = document.createElement('div');
+    holder.className = 'pdf-render';
+    holder.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;background:#fff;';
+    holder.innerHTML = buildDocs();
+    document.body.appendChild(holder);
+
+    var docs = Array.prototype.slice.call(holder.querySelectorAll('.doc'));
+    var pdf = new jsPDFCtor({ unit: 'pt', format: 'a4' });
+    var pw = pdf.internal.pageSize.getWidth();
+    var ph = pdf.internal.pageSize.getHeight();
+
+    var idx = 0;
+    function step() {
+      if (idx >= docs.length) {
+        pdf.save(safeName(state.client.name) + '_' + (state.issueDate || '') + '.pdf');
+        if (holder.parentNode) holder.parentNode.removeChild(holder);
+        btn.disabled = false; btn.textContent = label;
+        flash('PDFを保存しました');
+        return;
+      }
+      window.html2canvas(docs[idx], { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false })
+        .then(function (canvas) {
+          var img = canvas.toDataURL('image/jpeg', 0.92);
+          var imgW = pw;
+          var imgH = canvas.height * pw / canvas.width;
+          if (imgH > ph) { imgH = ph; imgW = canvas.width * ph / canvas.height; }
+          if (idx > 0) pdf.addPage();
+          pdf.addImage(img, 'JPEG', (pw - imgW) / 2, 0, imgW, imgH);
+          idx++;
+          step();
+        })
+        .catch(function (e) {
+          console.error(e);
+          if (holder.parentNode) holder.parentNode.removeChild(holder);
+          btn.disabled = false; btn.textContent = label;
+          flash('PDF生成に失敗。印刷画面から保存してください');
+          fallbackPrint();
+        });
+    }
+    step();
   }
 
   // ---------------- 初期化 ----------------
@@ -413,7 +470,7 @@
       });
     });
 
-    $('btnPrint').addEventListener('click', printDocs);
+    $('btnPrint').addEventListener('click', downloadPDF);
     $('btnSave').addEventListener('click', saveDoc);
     $('btnHistory').addEventListener('click', openHistory);
     $('btnCloseHistory').addEventListener('click', closeHistory);

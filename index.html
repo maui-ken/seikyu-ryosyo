@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="robots" content="noindex, nofollow" />
-<meta name="theme-color" content="#0f766e" />
+<meta name="theme-color" content="#0b0d10" />
 <link rel="manifest" href="manifest.json" />
 <title>請求書・領収書メーカー</title>
 <link rel="stylesheet" href="styles.css" />
@@ -96,7 +96,7 @@
         </div>
         <div class="preview-controls-right">
           <button id="btnSave" class="ghost" type="button">保存</button>
-          <button id="btnPrint" class="primary" type="button">PDF出力</button>
+          <button id="btnPrint" class="primary" type="button">PDFダウンロード</button>
         </div>
       </div>
       <div id="previewScroll" class="preview-scroll"></div>
@@ -123,6 +123,8 @@
   </div>
 </div>
 
+<script src="lib/jspdf.umd.min.js"></script>
+<script src="lib/html2canvas.min.js"></script>
 <script src="engine.js"></script>
 <script src="app.js"></script>
 <script>

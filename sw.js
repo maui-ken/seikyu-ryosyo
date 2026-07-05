@@ -2,13 +2,15 @@
  * HTML/JS はネット優先（常に最新を配信、オフライン時のみキャッシュ）。
  * それ以外(css/画像/manifest)はキャッシュ優先で高速表示。
  */
-var CACHE = 'seikyu-ryosyo-v4';
+var CACHE = 'seikyu-ryosyo-v5';
 var ASSETS = [
   './',
   './index.html',
   './styles.css',
   './engine.js',
   './app.js',
+  './lib/jspdf.umd.min.js',
+  './lib/html2canvas.min.js',
   './privacy.html',
   './manifest.json',
   './icon.svg'

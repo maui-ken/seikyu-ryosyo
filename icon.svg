@@ -1,12 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#0f766e"/>
-  <g transform="translate(96 80)">
-    <rect x="0" y="24" width="240" height="312" rx="16" fill="#ffffff" opacity="0.35"/>
-    <rect x="80" y="0" width="240" height="312" rx="16" fill="#ffffff"/>
-    <rect x="112" y="56" width="176" height="20" rx="10" fill="#0f766e"/>
-    <rect x="112" y="104" width="176" height="14" rx="7" fill="#94a3b8"/>
-    <rect x="112" y="140" width="176" height="14" rx="7" fill="#94a3b8"/>
-    <rect x="112" y="176" width="112" height="14" rx="7" fill="#94a3b8"/>
-    <rect x="176" y="228" width="112" height="40" rx="10" fill="#0f766e"/>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e6cd86"/>
+      <stop offset="1" stop-color="#b8933f"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#101318"/>
+  <rect x="8" y="8" width="496" height="496" rx="106" fill="none" stroke="url(#gold)" stroke-width="4" opacity="0.5"/>
+  <g transform="translate(104 84)">
+    <rect x="0" y="26" width="232" height="316" rx="14" fill="#2a2f38"/>
+    <rect x="72" y="0" width="232" height="316" rx="14" fill="#faf7ef"/>
+    <rect x="104" y="52" width="168" height="16" rx="8" fill="url(#gold)"/>
+    <rect x="104" y="98" width="168" height="11" rx="5.5" fill="#c7c2b4"/>
+    <rect x="104" y="132" width="168" height="11" rx="5.5" fill="#c7c2b4"/>
+    <rect x="104" y="166" width="104" height="11" rx="5.5" fill="#c7c2b4"/>
+    <rect x="160" y="220" width="112" height="42" rx="9" fill="url(#gold)"/>
   </g>
 </svg>
